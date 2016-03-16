@@ -2,8 +2,8 @@
  * Read web server data and analyse
  * hourly access patterns.
  * 
- * @author David J. Barnes and Michael Kölling.
- * @version 2011.07.31
+ * @author Edward Pisco.
+ * @version 03.15.16
  */
 public class LogAnalyzer
 {
@@ -15,13 +15,13 @@ public class LogAnalyzer
     /**
      * Create an object to analyze hourly web accesses.
      */
-    public LogAnalyzer()
+    public LogAnalyzer(String fileName)
     { 
         // Create the array object to hold the hourly
         // access counts.
         hourCounts = new int[24];
         // Create the reader to obtain the data.
-        reader = new LogfileReader();
+        reader = new LogfileReader(fileName);
     }
 
     /**
@@ -35,7 +35,83 @@ public class LogAnalyzer
             hourCounts[hour]++;
         }
     }
-
+    /**
+     * Method that returns total number of accesses.
+     */
+    public int numberofAccesses()
+    {
+    int total = 0;
+    for(int hour = 0; hour <= hourCounts.length -1; hour++)
+    {
+        total = total + hourCounts[hour];
+    }
+    return total;
+    }
+    /**
+     * Method that returns the busiest hour.
+     */
+    public int busiestHour()
+    {
+       int maxCount = hourCounts[0];
+       
+       for(int hour = 1; hour <= hourCounts.length -1; hour++)
+       {
+           if(maxCount < hourCounts[hour])
+           {
+               maxCount = hourCounts[hour];
+            }
+        }
+        return maxCount;
+    }
+    /**
+     * Method that finds which two hour period is the busiest.
+     */
+    public int twobusiestHour()
+    {
+            int numBusiest = 0;
+            int busiestHour = 0;
+            
+            for(int hour = 1; hour <= hourCounts.length -1; hour++)
+            {
+                if (numBusiest < hourCounts[hour] + hourCounts[hour + 1])
+                {
+                    busiestHour = hour;
+                    numBusiest = hourCounts[hour] + hourCounts[hour + 1];
+                    hour++;
+                }
+                else {
+                    hour++;
+                }
+            }
+            return busiestHour;
+    }          
+    /**
+     * Method that returns the number of the least busy hour.
+     */
+    public int quietestHour()
+    {
+        int minCount = 0;
+        boolean initializeCounter = false;
+        for(int hour = 0; hour <= hourCounts.length -1; hour++)
+        {
+            if(initializeCounter == false)
+            {
+                if(hourCounts[hour] > 0)
+                {
+                    minCount = hourCounts[hour];
+                    initializeCounter = true;
+                }
+           }
+           else
+            {
+           if(hourCounts[hour] > 0 && minCount > hourCounts[hour])
+                {
+                    minCount = hourCounts[hour];
+                }
+            }
+        }
+        return minCount;
+    }
     /**
      * Print the hourly counts.
      * These should have been set with a prior
